@@ -23,21 +23,22 @@ public class DetailActivity extends AppCompatActivity {
         TextView textView = (TextView)this.findViewById(R.id.text_view_name);
         textView.setText(candy_name);
 
-        String candyImage = "";
+        String candy_image = "";
         if (intent.hasExtra("candy_image")) {
-            candyImage = intent.getStringExtra("candy_image");
+            candy_image = intent.getStringExtra("candy_image");
         }
 
-        String candyPrice = "";
+        String candy_price = "";
         if (intent.hasExtra("candy_price")) {
-            candyPrice = intent.getStringExtra("candy_price");
+            candy_price = intent.getStringExtra("candy_price");
         }
 
-        String candyDesc = "";
+        String candy_desc = "";
         if (intent.hasExtra("candy_desc")) {
-            candyDesc = intent.getStringExtra("candy_desc");
+            candy_desc = intent.getStringExtra("candy_desc");
         }
 
-        Log.d("DetailActivity", "Intent Data: : + " + candyImage + ", " + candyPrice + ", " + candyDesc);
+        Log.d("DetailActivity", "Intent data: " + candy_image + ", " +
+                candy_price + ", " + candy_desc);
     }
 }
