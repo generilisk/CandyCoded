@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
+import com.squareup.picasso.Picasso;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -27,6 +29,9 @@ public class DetailActivity extends AppCompatActivity {
         if (intent.hasExtra("candy_image")) {
             candy_image = intent.getStringExtra("candy_image");
         }
+
+        ImageView imageView = (ImageView)this.findViewById(R.id.image_view_candy);
+        Picasso.with(this).load(candy_image).into(imageView);
 
         String candy_price = "";
         if (intent.hasExtra("candy_price")) {
