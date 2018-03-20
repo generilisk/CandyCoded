@@ -57,9 +57,9 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent detailIntent = new Intent(MainActivity.this, DetailActivity.class);
                 detailIntent.putExtra("candy_name", candies[i].name);
-//                detailIntent.putExtra("candy_image", candies[i].image);
-//                detailIntent.putExtra("candy_price", candies[i].price);
-//                detailIntent.putExtra("candy_desc", candies[i].description);
+                detailIntent.putExtra("candy_image", candies[i].image);
+                detailIntent.putExtra("candy_price", candies[i].price);
+                detailIntent.putExtra("candy_desc", candies[i].description);
                 startActivity(detailIntent);
             }
         });
@@ -71,14 +71,13 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                        Log.d("AsyncHttpClient", "response = " + responseString);
+                    public void onSuccess(int statusCode, Header[] headers, String response) {
+                        Log.d("AsyncHttpClient", "response = " + response);
                         Gson gson = new GsonBuilder().create();
-                        Candy[] candies = gson.fromJson(responseString, Candy[].class);
+                        candies = gson.fromJson(response, Candy[].class);
                         adapter.clear();
                         for (Candy candy : candies) {
                             adapter.add(candy.name);
-                            Log.d("Name - Debug - ","candy slot " + candy.id+ " is " + candy.name);
                         }
                     }
                 }
