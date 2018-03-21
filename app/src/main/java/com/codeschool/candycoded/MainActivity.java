@@ -1,7 +1,9 @@
 package com.codeschool.candycoded;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -23,6 +25,7 @@ import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity {
     private Candy[] candies;
+    private CandyDBHelper candyDbHelper = new CandyDBHelper(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,9 +82,23 @@ public class MainActivity extends AppCompatActivity {
                         for (Candy candy : candies) {
                             adapter.add(candy.name);
                         }
+                        addCandiesToDatabase(candies);
                     }
                 }
         );
 
+    }
+    public void addCandiesToDatabase(Candy[] candies){
+        SQLiteDatabase db = candyDbHelper.getWritableDatabase();
+
+        for(Candy candy : candies) {
+            ContentValues values = new ContentValues();
+            values.put(CandyContract.CandyEntry.COLUMN_NAME_NAME, candy.name);
+            values.put(CandyContract.CandyEntry.COLUMN_NAME_PRICE, candy.price);
+            values.put(CandyContract.CandyEntry.COLUMN_NAME_DESC, candy.description);
+            values.put(CandyContract.CandyEntry.COLUMN_NAME_IMAGE, candy.image);
+
+            db.insert(CandyContract.CandyEntry.TABLE_NAME, null, values);
+        }
     }
 }
