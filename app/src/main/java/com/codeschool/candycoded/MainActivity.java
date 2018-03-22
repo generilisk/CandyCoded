@@ -10,23 +10,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.codeschool.candycoded.CandyContract.CandyEntry;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
 
-import java.util.ArrayList;
-
 import cz.msebera.android.httpclient.Header;
+
+
 
 public class MainActivity extends AppCompatActivity {
     private Candy[] candies;
-    private CandyDBHelper candyDbHelper = new CandyDBHelper(this);
+    private CandyDBHelper candyDBHelper = new CandyDBHelper(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,12 +36,13 @@ public class MainActivity extends AppCompatActivity {
         TextView textView = (TextView)this.findViewById(R.id.text_view_title);
         textView.setText(R.string.products_title);
 
-        SQLiteDatabase db = candyDbHelper.getWritableDatabase();
-        Cursor cursor = db.rawQuery("Select * FROM candy", null);
+        SQLiteDatabase db = candyDBHelper.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM candy", null);
 
         final CandyCursorAdapter adapter = new CandyCursorAdapter(this, cursor);
 
         ListView listView = (ListView)this.findViewById(R.id.list_view_candy);
+
         listView.setAdapter(adapter);
 
         Context context = this;
@@ -58,11 +59,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(detailIntent);
             }
         });
+
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get("https://go.codeschool.com/CandyAPI", new TextHttpResponseHandler() {
+        client.get("https://s3.amazonaws.com/courseware.codeschool.com/super_sweet_android_time/API/CandyCoded.json",
+                new TextHttpResponseHandler() {
                     @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        Log.e("AsyncHttpClient", "response = " + responseString);
+                    public void onFailure(int statusCode, Header[] headers, String response, Throwable throwable) {
+                        Log.e("AsyncHttpClient", "response = " + response);
                     }
 
                     @Override
@@ -70,27 +73,27 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("AsyncHttpClient", "response = " + response);
                         Gson gson = new GsonBuilder().create();
                         candies = gson.fromJson(response, Candy[].class);
+
                         addCandiesToDatabase(candies);
 
-                        SQLiteDatabase db = candyDbHelper.getWritableDatabase();
+                        SQLiteDatabase db = candyDBHelper.getWritableDatabase();
                         Cursor cursor = db.rawQuery("SELECT * FROM candy", null);
                         adapter.changeCursor(cursor);
                     }
-                }
-        );
-
+                });
     }
-    public void addCandiesToDatabase(Candy[] candies){
-        SQLiteDatabase db = candyDbHelper.getWritableDatabase();
 
-        for(Candy candy : candies) {
+    private void addCandiesToDatabase(Candy[] candies) {
+        SQLiteDatabase db = candyDBHelper.getWritableDatabase();
+
+        for (Candy candy : candies) {
             ContentValues values = new ContentValues();
-            values.put(CandyContract.CandyEntry.COLUMN_NAME_NAME, candy.name);
-            values.put(CandyContract.CandyEntry.COLUMN_NAME_PRICE, candy.price);
-            values.put(CandyContract.CandyEntry.COLUMN_NAME_DESC, candy.description);
-            values.put(CandyContract.CandyEntry.COLUMN_NAME_IMAGE, candy.image);
+            values.put(CandyEntry.COLUMN_NAME_NAME, candy.name);
+            values.put(CandyEntry.COLUMN_NAME_PRICE, candy.price);
+            values.put(CandyEntry.COLUMN_NAME_DESC, candy.description);
+            values.put(CandyEntry.COLUMN_NAME_IMAGE, candy.image);
 
-            db.insert(CandyContract.CandyEntry.TABLE_NAME, null, values);
+            db.insert(CandyEntry.TABLE_NAME, null, values);
         }
     }
 }
